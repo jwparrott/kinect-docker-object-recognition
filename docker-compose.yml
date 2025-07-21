@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: tracker
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db/init_db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  sensor_node:
+    build:
+      context: ./sensor_node
+    depends_on:
+      - db
+    network_mode: "host"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+
+  tracker_node:
+    build:
+      context: ./tracker_node
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    network_mode: "host"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+
+volumes:
+  db_data:
