@@ -1,7 +1,0 @@
-CREATE TABLE IF NOT EXISTS detected_objects (
-    id SERIAL PRIMARY KEY,
-    x FLOAT,
-    y FLOAT,
-    depth FLOAT,
-    timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-);
